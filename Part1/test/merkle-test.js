@@ -47,10 +47,18 @@ describe("MerkleTree", function () {
     it("Insert two new leaves and verify the first leaf in an inclusion proof", async function () {
         await merkleTree.insertLeaf(1);
         await merkleTree.insertLeaf(2);
-
+        
+        
+        
+        const node0=(await merkleTree.hashes(0)).toString();
+        
+        const node1=(await merkleTree.hashes(1)).toString();
+        const node2=(await merkleTree.hashes(2)).toString();
+        const node8=(await merkleTree.hashes(8)).toString();
+        const node12=(await merkleTree.hashes(12)).toString();
         const node9 = (await merkleTree.hashes(9)).toString();
         const node13 = (await merkleTree.hashes(13)).toString();
-
+        const root=(await merkleTree.hashes(14)).toString();
         const Input = {
             "leaf": "1",
             "path_elements": ["2", node9, node13],
@@ -63,13 +71,22 @@ describe("MerkleTree", function () {
         const calldata = await groth16.exportSolidityCallData(editedProof, editedPublicSignals);
     
         const argv = calldata.replace(/["[\]\s]/g, "").split(',').map(x => BigInt(x).toString());
-    
+          
         const a = [argv[0], argv[1]];
         const b = [[argv[2], argv[3]], [argv[4], argv[5]]];
         const c = [argv[6], argv[7]];
         const input = argv.slice(8);
-
+        console.log("node0 : ",node0);
+        console.log("node1 : ",node1);
+        console.log("node2 : ",node2);
+        console.log("node8 : ",node8);
+        console.log("node12 : ",node12);
+        console.log("root : ",root);
+        console.log("circom root:",input);
+       
         expect(await merkleTree.verify(a, b, c, input)).to.be.true;
+        
+      
 
         // [bonus] verify the second leaf with the inclusion proof
     });
